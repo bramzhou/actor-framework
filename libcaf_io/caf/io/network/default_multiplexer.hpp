@@ -780,28 +780,28 @@ class acceptor : public event_handler {
 
 };
 
-native_socket new_ipv4_connection_impl(const std::string&, uint16_t);
+native_socket new_ip_connection_impl(const std::string&, uint16_t);
 
-default_socket new_ipv4_connection(const std::string& host, uint16_t port);
+default_socket new_ip_connection(const std::string& host, uint16_t port);
 
 template <class Socket>
 void ipv4_connect(Socket& sock, const std::string& host, uint16_t port) {
-  sock = new_ipv4_connection(host, port);
+  sock = new_ip_connection(host, port);
 }
 
 std::pair<native_socket, uint16_t>
-new_ipv4_acceptor_impl(uint16_t port, const char* addr, bool reuse_addr);
+new_ip_acceptor_impl(uint16_t port, const char* addr, bool reuse_addr);
 
 std::pair<default_socket_acceptor, uint16_t>
-new_ipv4_acceptor(uint16_t port, const char* addr = nullptr,
+new_ip_acceptor(uint16_t port, const char* addr = nullptr,
                   bool reuse_addr = false);
 
 template <class SocketAcceptor>
-uint16_t ipv4_bind(SocketAcceptor& sock,
+uint16_t ip_bind(SocketAcceptor& sock,
          uint16_t port,
          const char* addr = nullptr) {
   CAF_LOGF_TRACE(CAF_ARG(port));
-  auto acceptor = new_ipv4_acceptor(port, addr);
+  auto acceptor = new_ip_acceptor(port, addr);
   sock = std::move(acceptor.first);
   return acceptor.second;
 }
