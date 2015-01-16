@@ -1015,6 +1015,7 @@ native_socket new_ip_connection_impl(const std::string& host, uint16_t port) {
       ipv6_entry = walker;
     }
   }
+  freeaddrinfo(entries);
   native_socket fd;
   if (ipv6_entry) {
     fd = new_ipv6_connection_impl(ipv6_entry, port);
@@ -1174,11 +1175,12 @@ new_ip_acceptor_impl(uint16_t port, const char* addr, bool reuse_addr) {
         ipv6_entry = walker;
       }
     }
+    freeaddrinfo(entries);
     if (ipv6_entry) {
       af_fam = AF_INET6;
     } else if(ipv4_entry) {
       af_fam = AF_INET;
-    } else {;
+    } else {
       no_host_fun();
     }
   }
