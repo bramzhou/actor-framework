@@ -1073,17 +1073,17 @@ new_ipv6_acceptor_impl(uint16_t port, const char* addr, bool reuse_addr) {
       throw_io_failure("unable to set SO_REUSEADDR");
     }
   }
-  // also accept ipv4 requests on this socket
-  int off = 0;
-  if (setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY,
-                 reinterpret_cast<setsockopt_ptr>(&off), sizeof(off)) < 0) {
-    throw network_error("unable to unset IPV6_V6ONLY");
-  }
   struct sockaddr_in6 serv_addr;
   memset(&serv_addr, 0, sizeof(serv_addr));
   serv_addr.sin6_family = AF_INET6;
   if (!addr) {
     serv_addr.sin6_addr = in6addr_any;
+    // also accept ipv4 requests on this socket
+    int off = 0;
+    if (setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY,
+                   reinterpret_cast<setsockopt_ptr>(&off), sizeof(off)) < 0) {
+      throw network_error("unable to unset IPV6_V6ONLY");
+    }
   } else if (::inet_pton(AF_INET6, addr, &serv_addr.sin6_addr) <= 0) {
     std::string err("invalid IPv6 address: ");
     err += addr;
