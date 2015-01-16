@@ -20,6 +20,8 @@
 #ifndef CAF_IO_NETWORK_ADDRESSES_HPP
 #define CAF_IO_NETWORK_ADDRESSES_HPP
 
+#include <netdb.h>
+
 #include <map>
 #include <vector>
 #include <string>
@@ -57,6 +59,17 @@ class interfaces {
    */
   static std::vector<std::string> list_addresses(protocol proc,
                                                  bool include_localhost = true);
+
+  /**
+   * Returns addrinfo for given host address.
+   **/
+  static addrinfo get_addrinfo_of_host(const std::string& host,
+                                       protocol preferred = protocol::ipv4);
+
+  /**
+   * Returns protocol for given addrinfo.
+   **/
+  static protocol get_protocol_of_addrinfo(const addrinfo& addr);
 };
 
 } // namespace network

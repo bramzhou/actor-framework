@@ -20,7 +20,6 @@
 #include "caf/io/network/interfaces.hpp"
 
 #include <errno.h>
-#include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
 #include <net/if.h>
@@ -142,6 +141,35 @@ std::vector<std::string> interfaces::list_addresses(protocol proc,
       break;
   }
   return result;
+}
+
+addrinfo interfaces::get_addrinfo_of_host(const std::string& host,
+                                          protocol preferred) {
+  addrinfo hint;
+  addrinfo result;
+  memset(&hint, 0, sizeof(hint));
+  hint.ai_socktype     = SOCK_STREAM;
+  addrinfo* entries    = nullptr;
+  addrinfo* memory     = nullptr;
+  if (getaddrinfo(host.c_str(), nullptr, &hint, &entries)) {
+    return result;
+  }
+  for (auto walker = entries; walker; walker = entries->ai_next) {
+    if (walker->ai_family == AF_INET || walker->ai_family == AF_INET6) {
+      memory = walker;
+      if ((preferred == protocol::ipv6 && memory->ai_family == AF_INET6) ||
+          (preferred == protocol::ipv4 && memory->ai_family == AF_INET)) {
+        break;
+      }
+    }
+  }
+  result = *memory;
+  freeaddrinfo(entries);
+  return result;
+}
+
+protocol interfaces::get_protocol_of_addrinfo(const addrinfo& addr) {
+  return addr.ai_family == AF_INET6 ? protocol::ipv6 : protocol::ipv4;
 }
 
 } // namespace network
